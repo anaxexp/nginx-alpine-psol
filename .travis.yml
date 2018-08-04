@@ -1,0 +1,22 @@
+language: bash
+
+services:
+  - docker
+
+env:
+  - ALPINE_VER=3.8
+
+script:
+  - docker build -t psol --build-arg ALPINE_VER="${ALPINE_VER}" ./
+  - docker run --rm -v $PWD:/tmp psol sh -c "cp /usr/src/modpagespeed/psol.tar.gz /tmp/"
+
+deploy:
+  - provider: releases
+    api_key: $GITHUB_ACCESS_TOKEN
+    overwrite: true
+    skip_cleanup: true
+    file_glob: true
+    file:
+      - psol.tar.gz
+    on:
+      tags: true
